@@ -1,0 +1,7 @@
+Options -Indexes
+<FilesMatch "\.(sql|py)$|^\.env|^config.*\.php$">
+  Require all denied
+</FilesMatch>
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
