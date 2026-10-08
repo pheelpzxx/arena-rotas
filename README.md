@@ -1,45 +1,39 @@
 # Arena — Central de rotas
 
-Primeira versão: React + TypeScript + Material UI, API PHP puro e estrutura MySQL. PostgreSQL é a fonte do SYSEMP.
+React + TypeScript + Material UI, API PHP puro e PostgreSQL como fonte SYSEMP. A estrutura MySQL em database é uma base futura; não é usada para copiar o SYSEMP.
 
-## Testar localmente
+## Executar
 
-Instale Node.js 22 ou superior. Nesta pasta:
+Node.js 22.18+:
 
 ```
-npm install
+npm ci
 npm run dev
+npm run build
+npm test
 ```
 
-Para compilar: `npm run build`. Para visualizar a compilação: `npm run preview`.
+## Funcionalidades
 
-## GitHub Pages
+- Importação XLSX com escolha da coluna de pedidos, limpeza, deduplicação e comparação de listas.
+- Visão inicial vazia; exemplos disponíveis apenas quando selecionados explicitamente.
+- Consulta de cargas por previsão ou data das notas; conferência dos pedidos importados contra cargas.
+- PB total e PB de caminhão por carga, data, placa, ID do motorista, pedidos e avisos de divergência.
+- Importação de consulta local JSON como alternativa à API hospedada, sem atualização automática.
+- Configuração e simulação de motoristas e capacidade somente na sessão.
 
-Crie um repositório e envie **somente o conteúdo desta pasta site**, incluindo o package-lock.json e .github. Não envie a pasta pai projeto2.0: ela contém conexão local e dados privados.
-Em Settings → Pages → Source, escolha GitHub Actions. O workflow publica a demonstração quando houver push em main.
+## Integração
 
-GitHub Pages hospeda apenas o frontend estático. PHP e bancos precisam de outro servidor. Esta versão demonstra a interface com dados fictícios; não conecta ao banco no navegador.
+Veja CONEXAO_SYSEMP.md para instalar a API e o exportador Python. A API ainda precisa de hospedagem, configuração privada e teste de conectividade. Credenciais ficam no servidor; nunca em React, variáveis VITE_, GitHub ou arquivos públicos. Nenhum acesso à hospedagem é necessário para compilar o frontend.
 
-## O que funciona
+Vercel e GitHub Pages publicam o frontend estático. O PHP deve rodar em servidor compatível separado. O workflow em .github publica Pages ao atualizar main. Publique apenas esta pasta, sem node_modules/dist nem dados e conexão da pasta pai.
 
-- Visão de rotas e cálculo ilustrativo de ocupação.
-- Revisão de motorista e PB na sessão.
-- Importação da primeira aba XLSX com cabeçalho na primeira linha e seleção explícita da coluna dos pedidos.
-- Limpeza de pontuação, deduplicação, lista de inválidos e cópia dos pedidos.
-- Comparação de duas listas de pedidos (um por linha).
-- Configuração temporária de motoristas fixos e limites de capacidade.
-- Interface responsiva e operação Bonini separada.
+## Limites operacionais
 
-## Limites
+PBs seguem os subgrupos do cadastro e exigem validação operacional. Total é da carga inteira e caminhão já está incluído. A classificação não libera carregamento. Datas divergentes são sinalizadas para conferência com o POP, sem correção automática.
 
-Dados fictícios, sem salvar mudanças entre recargas. Não calcula trajetos, não mede fadiga, não libera carregamento e não implementa ainda calendário do POP ou preenchimento do KPI. Data selecionada não filtra os dados fictícios. PB caminhão está incluído no total, não é somado novamente. Classificação por SKU e capacidade mista exigem validação.
+Ainda não implementa otimização geográfica, fadiga calculada, escala persistente, preenchimento do KPI nem calendário completo do POP. Os exemplos de capacidade não são parâmetros operacionais validados. Autenticação individual, auditoria e controle de requisições precisam ser concluídos antes do uso por equipe.
 
-## API PHP (base para integração)
+## Verificação
 
-PHP 8.1+ com PDO PostgreSQL. Configure variáveis do ambiente listadas em api/.env.example; o PHP não carrega .env automaticamente. Inicie na raiz: `php -S localhost:8080 api/index.php`.
-GET /api/health verifica o serviço. GET /api/cargas?data=2026-10-09 requer Authorization: Bearer com API_TOKEN configurado e consulta apenas cargas pela previsão de entrega. A consulta usa transação somente leitura e timeout. Não foi validada contra registros reais. O frontend não consome a API ainda; autenticação de usuários e integração devem preceder publicação dos dados reais. Nunca coloque API_TOKEN ou credenciais do banco em variáveis VITE_ ou no GitHub Pages.
-
-## MySQL
-
-Execute database/schema.sql em uma base separada do SYSEMP. É uma estrutura inicial; ainda não é usada pela interface.
-
+npm test verifica contratos de resposta, datas inválidas, duplicação de cargas, PBs inconsistentes, segurança de URL e erros da API. npm run build verifica TypeScript e gera a aplicação. Essas verificações não substituem o teste PHP/Hostinger e a validação das regras de negócio no encerramento da configuração.

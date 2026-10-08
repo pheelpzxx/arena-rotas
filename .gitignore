@@ -9,3 +9,6 @@ conexao_local.py
 __pycache__/
 
 *.tsbuildinfo
+config.local.php
+consulta_sysemp_*.json
+*.zip
